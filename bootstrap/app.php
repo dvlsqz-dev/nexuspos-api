@@ -17,6 +17,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'resolve.tenant' => \App\Http\Middleware\ResolveTenant::class,
             'tenant.user' => \App\Http\Middleware\EnsureIsTenantUser::class,
             'platform.admin' => \App\Http\Middleware\EnsureIsPlatformAdmin::class,
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

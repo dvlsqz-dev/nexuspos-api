@@ -6,10 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterTenantRequest;
 use App\Models\Tenant;
 use App\Models\TenantDocument;
+use App\Services\TenantRoleProvisioner;
 use Illuminate\Support\Facades\DB;
 
 class RegisterController extends Controller
 {
+    public function __construct( private readonly TenantRoleProvisioner $roleProvisioner) 
+    {
+
+    }
+
+
     public function store(RegisterTenantRequest $request)
     {
         $validated = $request->validated();
@@ -27,7 +34,7 @@ class RegisterController extends Controller
                 'status' => 'pendiente',
             ]);
 
-            $tenant->users()->create([
+            $user = $tenant->users()->create([
                 'name' => $validated['user_name'],
                 'dpi' => $validated['dpi'],
                 'email' => $validated['email'],
@@ -45,6 +52,9 @@ class RegisterController extends Controller
                     'uploaded_at' => now(),
                 ]);
             }
+
+            $this->roleProvisioner->provisionForTenant($tenant);
+            $this->roleProvisioner->assignOwnerRole($user);
 
             return $tenant;
         });
