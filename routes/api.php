@@ -1,10 +1,16 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\Auth\AdminLoginController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Admin\TenantApprovalController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Tenant\BranchController;
+use App\Http\Controllers\Tenant\ConfigController;
+use App\Http\Controllers\Tenant\UserController;
+use App\Http\Controllers\Tenant\RoleController;
+
 
 Route::prefix('v1')->group(function () {
 
@@ -17,8 +23,19 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'tenant.user', 'resolve.tenant'])->group(function () {
         Route::post('logout', [LoginController::class, 'destroy']);
 
-        // Aquí se irán agregando las rutas de cada módulo:
-        // products, sales, customers, etc. según avancemos features.
+        Route::apiResource('branches', BranchController::class)->middleware('permission:branches.manage');
+
+        Route::get('tenant/config', [ConfigController::class, 'show']);
+        Route::put('tenant/config', [ConfigController::class, 'update'])->middleware('permission:tenant.config');
+
+        Route::get('tenant/roles', [RoleController::class, 'index']);
+
+        Route::middleware('permission:users.manage')->group(function () {
+            Route::get('tenant/users', [UserController::class, 'index']);
+            Route::post('tenant/users', [UserController::class, 'store']);
+            Route::put('tenant/users/{user}', [UserController::class, 'update']);
+            Route::delete('tenant/users/{user}', [UserController::class, 'destroy']);
+        });
     });
 
     // --- Rutas de la plataforma (platform admin) ---
