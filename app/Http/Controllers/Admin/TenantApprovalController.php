@@ -5,10 +5,16 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant;
 use App\Models\TenantDocument;
+use App\Services\TenantActivationService;
 use Illuminate\Support\Facades\Storage;
 
 class TenantApprovalController extends Controller
 {
+    public function __construct( private readonly TenantActivationService $activationService ) 
+    {
+
+    }
+
     public function pending()
     {
         $tenants = Tenant::where('status', 'pendiente')
@@ -27,11 +33,11 @@ class TenantApprovalController extends Controller
 
     public function approve(Tenant $tenant)
     {
-        $tenant->update(['status' => 'activo']);
+        $this->activationService->activate($tenant);
 
         return response()->json([
             'message' => 'Tenant aprobado.',
-            'tenant' => $tenant,
+            'tenant' => $tenant->fresh('branches'),
         ]);
     }
 
