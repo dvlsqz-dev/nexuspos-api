@@ -10,6 +10,10 @@ use App\Http\Controllers\Tenant\BranchController;
 use App\Http\Controllers\Tenant\ConfigController;
 use App\Http\Controllers\Tenant\UserController;
 use App\Http\Controllers\Tenant\RoleController;
+use App\Http\Controllers\Tenant\CategoryController;
+use App\Http\Controllers\Tenant\UnitController;
+use App\Http\Controllers\Tenant\ProductController;
+use App\Http\Controllers\Tenant\ProductBatchController;
 
 
 Route::prefix('v1')->group(function () {
@@ -36,6 +40,33 @@ Route::prefix('v1')->group(function () {
             Route::put('tenant/users/{user}', [UserController::class, 'update']);
             Route::delete('tenant/users/{user}', [UserController::class, 'destroy']);
         });
+
+        Route::apiResource('categories', CategoryController::class)
+        ->middleware('permission:categories.manage');
+
+        Route::apiResource('units', UnitController::class)
+            ->middleware('permission:units.manage');
+
+        Route::get('products', [ProductController::class, 'index'])
+            ->middleware('permission:products.view');
+        Route::post('products', [ProductController::class, 'store'])
+            ->middleware('permission:products.create');
+        Route::get('products/{product}', [ProductController::class, 'show'])
+            ->middleware('permission:products.view');
+        Route::put('products/{product}', [ProductController::class, 'update'])
+            ->middleware('permission:products.update');
+        Route::delete('products/{product}', [ProductController::class, 'destroy'])
+            ->middleware('permission:products.delete');
+        Route::post('products/{product}/images', [ProductController::class, 'uploadImage'])
+            ->middleware('permission:products.update');
+        Route::delete('products/{product}/images/{image}', [ProductController::class, 'deleteImage'])
+            ->middleware('permission:products.update');
+        Route::middleware('permission:batches.manage')->group(function () {
+        Route::get('products/{product}/batches', [ProductBatchController::class, 'index']);
+        Route::post('products/{product}/batches', [ProductBatchController::class, 'store']);
+        Route::put('products/{product}/batches/{batch}', [ProductBatchController::class, 'update']);
+        Route::delete('products/{product}/batches/{batch}', [ProductBatchController::class, 'destroy']);
+});
     });
 
     // --- Rutas de la plataforma (platform admin) ---

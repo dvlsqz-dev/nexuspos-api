@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Tenant;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateTenantUserRequest;
 use App\Http\Requests\UpdateTenantUserRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class TenantUserController extends Controller
+class UserController extends Controller
 {
     public function index(Request $request)
     {
