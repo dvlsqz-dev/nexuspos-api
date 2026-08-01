@@ -14,6 +14,8 @@ use App\Http\Controllers\Tenant\CategoryController;
 use App\Http\Controllers\Tenant\UnitController;
 use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\ProductBatchController;
+use App\Http\Controllers\Tenant\InventoryMovementController;
+use App\Http\Controllers\Tenant\StockAlertController;
 
 
 Route::prefix('v1')->group(function () {
@@ -66,6 +68,14 @@ Route::prefix('v1')->group(function () {
         Route::post('products/{product}/batches', [ProductBatchController::class, 'store']);
         Route::put('products/{product}/batches/{batch}', [ProductBatchController::class, 'update']);
         Route::delete('products/{product}/batches/{batch}', [ProductBatchController::class, 'destroy']);
+
+        Route::middleware('permission:inventory.view')->group(function () {
+            Route::get('products/{product}/movements', [InventoryMovementController::class, 'index']);
+            Route::get('stock-alerts', [StockAlertController::class, 'index']);
+        });
+
+        Route::post('products/{product}/movements', [InventoryMovementController::class, 'store'])
+            ->middleware('permission:inventory.adjust');
 });
     });
 
