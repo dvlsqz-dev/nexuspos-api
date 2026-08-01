@@ -59,12 +59,6 @@ return [
             'throw' => false,
             'report' => false,
         ],
-        'tenant_documents' => [
-            'driver' => 'local',
-            'root' => storage_path('app/private/tenant-documents'),
-            'visibility' => 'private',
-            'throw' => false,
-        ],
 
     ],
 
