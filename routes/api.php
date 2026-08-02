@@ -16,6 +16,7 @@ use App\Http\Controllers\Tenant\ProductController;
 use App\Http\Controllers\Tenant\ProductBatchController;
 use App\Http\Controllers\Tenant\InventoryMovementController;
 use App\Http\Controllers\Tenant\StockAlertController;
+use App\Http\Controllers\Tenant\CustomerController;
 
 
 Route::prefix('v1')->group(function () {
@@ -76,6 +77,18 @@ Route::prefix('v1')->group(function () {
 
         Route::post('products/{product}/movements', [InventoryMovementController::class, 'store'])
             ->middleware('permission:inventory.adjust');
+
+        Route::middleware('permission:customers.view')->group(function () {
+            Route::get('customers', [CustomerController::class, 'index']);
+            Route::get('customers/nit/{nit}', [CustomerController::class, 'findByNit']);
+            Route::get('customers/{customer}', [CustomerController::class, 'show']);
+        });
+
+        Route::middleware('permission:customers.manage')->group(function () {
+            Route::post('customers', [CustomerController::class, 'store']);
+            Route::put('customers/{customer}', [CustomerController::class, 'update']);
+            Route::delete('customers/{customer}', [CustomerController::class, 'destroy']);
+        });
 });
     });
 

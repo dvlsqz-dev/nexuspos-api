@@ -33,6 +33,7 @@ class TenantRoleProvisioner
             'reports.view',
         ],
         'cajero' => [
+            'customers.view',
             'sales.create', 'sales.view',
             'cash.open', 'cash.close', 'cash.movements',
         ],
