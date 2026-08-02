@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\UploadProductImageRequest;
 use App\Models\ProductImage;
 use Illuminate\Support\Facades\Storage;
+use App\Services\DiscountResolver;
 
 class ProductController extends Controller
 {
@@ -20,9 +21,7 @@ class ProductController extends Controller
         return response()->json([
             Product::with(['category', 'unit', 'images'])->paginate(20)
         ]);
-    }
-
-    
+    }    
 
     /**
      * Store a newly created resource in storage.
@@ -55,9 +54,14 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product)
+    public function show(Product $product, DiscountResolver $discountResolver)
     {
-        return response()->json($product->load(['category', 'unit', 'images', 'batches']));
+        $product->load(['category', 'unit', 'images', 'batches']);
+
+        return response()->json([
+            ...$product->toArray(),
+            'pricing' => $discountResolver->effectivePrice($product),
+        ]);
     }
 
 

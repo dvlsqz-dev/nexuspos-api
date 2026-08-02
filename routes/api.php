@@ -17,6 +17,7 @@ use App\Http\Controllers\Tenant\ProductBatchController;
 use App\Http\Controllers\Tenant\InventoryMovementController;
 use App\Http\Controllers\Tenant\StockAlertController;
 use App\Http\Controllers\Tenant\CustomerController;
+use App\Http\Controllers\Tenant\DiscountController;
 
 
 Route::prefix('v1')->group(function () {
@@ -89,6 +90,9 @@ Route::prefix('v1')->group(function () {
             Route::put('customers/{customer}', [CustomerController::class, 'update']);
             Route::delete('customers/{customer}', [CustomerController::class, 'destroy']);
         });
+
+        Route::apiResource('discounts', DiscountController::class)
+            ->middleware('permission:discounts.manage');
 });
     });
 
