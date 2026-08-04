@@ -18,6 +18,10 @@ use App\Http\Controllers\Tenant\InventoryMovementController;
 use App\Http\Controllers\Tenant\StockAlertController;
 use App\Http\Controllers\Tenant\CustomerController;
 use App\Http\Controllers\Tenant\DiscountController;
+use App\Http\Controllers\Tenant\CashRegisterController;
+use App\Http\Controllers\Tenant\CashSessionController;
+use App\Http\Controllers\Tenant\CashMovementController;
+
 
 
 Route::prefix('v1')->group(function () {
@@ -46,7 +50,7 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::apiResource('categories', CategoryController::class)
-        ->middleware('permission:categories.manage');
+            ->middleware('permission:categories.manage');
 
         Route::apiResource('units', UnitController::class)
             ->middleware('permission:units.manage');
@@ -66,10 +70,13 @@ Route::prefix('v1')->group(function () {
         Route::delete('products/{product}/images/{image}', [ProductController::class, 'deleteImage'])
             ->middleware('permission:products.update');
         Route::middleware('permission:batches.manage')->group(function () {
-        Route::get('products/{product}/batches', [ProductBatchController::class, 'index']);
-        Route::post('products/{product}/batches', [ProductBatchController::class, 'store']);
-        Route::put('products/{product}/batches/{batch}', [ProductBatchController::class, 'update']);
-        Route::delete('products/{product}/batches/{batch}', [ProductBatchController::class, 'destroy']);
+            Route::get('products/{product}/batches', [ProductBatchController::class, 'index']);
+            Route::post('products/{product}/batches', [ProductBatchController::class, 'store']);
+            Route::put('products/{product}/batches/{batch}', [ProductBatchController::class, 'update']);
+            Route::delete('products/{product}/batches/{batch}', [ProductBatchController::class, 'destroy']);
+
+            
+        });
 
         Route::middleware('permission:inventory.view')->group(function () {
             Route::get('products/{product}/movements', [InventoryMovementController::class, 'index']);
@@ -93,7 +100,19 @@ Route::prefix('v1')->group(function () {
 
         Route::apiResource('discounts', DiscountController::class)
             ->middleware('permission:discounts.manage');
-});
+
+        Route::apiResource('cash-registers', CashRegisterController::class)
+            ->middleware('permission:branches.manage');
+
+        Route::middleware('permission:cash.open')->post('cash-sessions/open', [CashSessionController::class, 'open']);
+        Route::middleware('permission:cash.close')->post('cash-sessions/{cashSession}/close', [CashSessionController::class, 'close']);
+
+        Route::get('cash-sessions/current', [CashSessionController::class, 'current']);
+
+        Route::middleware('permission:cash.movements')->group(function () {
+            Route::get('cash-movements', [CashMovementController::class, 'index']);
+            Route::post('cash-movements', [CashMovementController::class, 'store']);
+        });
     });
 
     // --- Rutas de la plataforma (platform admin) ---
