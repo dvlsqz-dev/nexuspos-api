@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PaymentMethod;
 use App\Models\Tenant;
 
 class TenantActivationService
@@ -16,6 +17,13 @@ class TenantActivationService
                 'address' => $tenant->address,
                 'phone' => $tenant->phone,
                 'is_main' => true,
+            ]);
+        }
+
+        if ($tenant->paymentMethods()->count() === 0) {
+            $tenant->paymentMethods()->createMany([
+                ['name' => 'Efectivo'],
+                ['name' => 'Tarjeta'],
             ]);
         }
     }

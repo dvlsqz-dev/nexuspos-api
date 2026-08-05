@@ -21,7 +21,8 @@ use App\Http\Controllers\Tenant\DiscountController;
 use App\Http\Controllers\Tenant\CashRegisterController;
 use App\Http\Controllers\Tenant\CashSessionController;
 use App\Http\Controllers\Tenant\CashMovementController;
-
+use App\Http\Controllers\Tenant\PaymentMethodController;
+use App\Http\Controllers\Tenant\SaleController;
 
 
 Route::prefix('v1')->group(function () {
@@ -113,6 +114,17 @@ Route::prefix('v1')->group(function () {
             Route::get('cash-movements', [CashMovementController::class, 'index']);
             Route::post('cash-movements', [CashMovementController::class, 'store']);
         });
+
+        Route::apiResource('payment-methods', PaymentMethodController::class)
+            ->middleware('permission:payment_methods.manage');
+
+        Route::middleware('permission:sales.view')->group(function () {
+            Route::get('sales', [SaleController::class, 'index']);
+            Route::get('sales/{sale}', [SaleController::class, 'show']);
+        });
+
+        Route::post('sales', [SaleController::class, 'store'])
+            ->middleware('permission:sales.create');
     });
 
     // --- Rutas de la plataforma (platform admin) ---

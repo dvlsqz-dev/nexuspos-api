@@ -46,4 +46,9 @@ class Tenant extends Model
     {
         return $this->hasMany(TenantDocument::class);
     }
+
+    public function paymentMethods(): HasMany
+    {
+        return $this->hasMany(PaymentMethod::class);
+    }
 }
