@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\CashSession;
+use App\Models\SalePayment;
 
 class CashSessionService
 {
@@ -12,11 +13,14 @@ class CashSessionService
             ->selectRaw("SUM(CASE WHEN type = 'ingreso' THEN amount ELSE -amount END) as total")
             ->value('total') ?? 0;
 
-        // NOTA: cuando construyamos feature/punto-de-venta, aquí se sumarán
-        // también los sale_payments en efectivo de las ventas registradas
-        // durante esta sesión. Por ahora, el cálculo solo contempla
-        // movimientos manuales de caja.
+        $cashSalesTotal = SalePayment::whereHas('sale', function ($query) use ($session) {
+                $query->where('cash_session_id', $session->id);
+            })
+            ->whereHas('paymentMethod', function ($query) {
+                $query->where('name', 'Efectivo');
+            })
+            ->sum('amount');
 
-        return (float) $session->opening_amount + (float) $movementsTotal;
+        return (float) $session->opening_amount + (float) $movementsTotal + (float) $cashSalesTotal;
     }
 }
