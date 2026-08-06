@@ -125,6 +125,8 @@ Route::prefix('v1')->group(function () {
 
         Route::post('sales', [SaleController::class, 'store'])
             ->middleware('permission:sales.create');
+        Route::post('sales/{sale}/void', [SaleController::class, 'void'])
+            ->middleware('permission:sales.void');
     });
 
     // --- Rutas de la plataforma (platform admin) ---
