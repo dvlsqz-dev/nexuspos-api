@@ -23,6 +23,7 @@ use App\Http\Controllers\Tenant\CashSessionController;
 use App\Http\Controllers\Tenant\CashMovementController;
 use App\Http\Controllers\Tenant\PaymentMethodController;
 use App\Http\Controllers\Tenant\SaleController;
+use App\Http\Controllers\Tenant\TicketController;
 
 
 Route::prefix('v1')->group(function () {
@@ -127,6 +128,11 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:sales.create');
         Route::post('sales/{sale}/void', [SaleController::class, 'void'])
             ->middleware('permission:sales.void');
+
+        Route::middleware('permission:sales.view')->group(function () {
+            Route::get('sales/{sale}/ticket/half-letter', [TicketController::class, 'halfLetter']);
+            Route::get('sales/{sale}/ticket/thermal', [TicketController::class, 'thermal']);
+        });
     });
 
     // --- Rutas de la plataforma (platform admin) ---

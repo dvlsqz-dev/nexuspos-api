@@ -31,6 +31,7 @@ class UpdateTenantConfigRequest extends FormRequest
             'phone' => ['sometimes', 'string', 'max:20'],
             'tax_regime' => ['sometimes', Rule::in(['pequeno_contribuyente', 'general'])],
             'currency' => ['sometimes', 'string', 'size:3'],
+            'ticket_paper_width' => ['sometimes', Rule::in(['58mm', '80mm'])],
         ];
     }
 }
