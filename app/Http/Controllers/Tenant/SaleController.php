@@ -138,4 +138,31 @@ class SaleController extends Controller
             201
         );
     }
+
+    public function void(Sale $sale)
+    {
+        abort_if($sale->tenant_id !== request()->user()->tenant_id, 404);
+        abort_if($sale->status !== 'completada', 422, 'Esta venta ya está anulada.');
+
+        DB::transaction(function () use ($sale) {
+            foreach ($sale->items()->with('product')->get() as $item) {
+                if ($item->product->track_inventory) {
+                    $this->inventoryService->registerMovement(
+                        product: $item->product,
+                        branch: $sale->branch,
+                        type: 'entrada',
+                        quantity: $item->quantity,
+                        user: request()->user(),
+                        reason: "Venta {$sale->sale_number} anulada",
+                        referenceType: Sale::class,
+                        referenceId: $sale->id,
+                    );
+                }
+            }
+
+            $sale->update(['status' => 'anulada']);
+        });
+
+        return response()->json($sale->fresh()->load(['items.product', 'payments']));
+    }
 }
