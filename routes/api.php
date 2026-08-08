@@ -24,6 +24,7 @@ use App\Http\Controllers\Tenant\CashMovementController;
 use App\Http\Controllers\Tenant\PaymentMethodController;
 use App\Http\Controllers\Tenant\SaleController;
 use App\Http\Controllers\Tenant\TicketController;
+use App\Http\Controllers\Tenant\ReportController;
 
 
 Route::prefix('v1')->group(function () {
@@ -132,6 +133,13 @@ Route::prefix('v1')->group(function () {
         Route::middleware('permission:sales.view')->group(function () {
             Route::get('sales/{sale}/ticket/half-letter', [TicketController::class, 'halfLetter']);
             Route::get('sales/{sale}/ticket/thermal', [TicketController::class, 'thermal']);
+        });
+
+        Route::middleware('permission:reports.view')->group(function () {
+            Route::get('reports/sales-summary', [ReportController::class, 'salesSummary']);
+            Route::get('reports/top-products', [ReportController::class, 'topProducts']);
+            Route::get('reports/payment-methods', [ReportController::class, 'paymentMethodsBreakdown']);
+            Route::get('reports/sales-by-day', [ReportController::class, 'salesByDay']);
         });
     });
 
