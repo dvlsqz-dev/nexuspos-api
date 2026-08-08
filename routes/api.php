@@ -26,6 +26,8 @@ use App\Http\Controllers\Tenant\SaleController;
 use App\Http\Controllers\Tenant\TicketController;
 use App\Http\Controllers\Tenant\ReportController;
 
+use App\Http\Controllers\Admin\PlatformMetricsController;
+
 
 Route::prefix('v1')->group(function () {
 
@@ -147,9 +149,15 @@ Route::prefix('v1')->group(function () {
     Route::prefix('admin')->middleware(['auth:sanctum', 'platform.admin'])->group(function () {
         Route::post('logout', [AdminLoginController::class, 'destroy']);
 
+        Route::get('tenants', [TenantApprovalController::class, 'index']);
         Route::get('tenants/pending', [TenantApprovalController::class, 'pending']);
+        Route::get('tenants/{tenant}', [TenantApprovalController::class, 'show']);
         Route::get('tenants/{tenant}/documents/{document}', [TenantApprovalController::class, 'showDocument']);
         Route::post('tenants/{tenant}/approve', [TenantApprovalController::class, 'approve']);
         Route::post('tenants/{tenant}/reject', [TenantApprovalController::class, 'reject']);
+        Route::post('tenants/{tenant}/suspend', [TenantApprovalController::class, 'suspend']);
+        Route::post('tenants/{tenant}/reactivate', [TenantApprovalController::class, 'reactivate']);
+
+        Route::get('metrics', [PlatformMetricsController::class, 'index']);
     });
 });
