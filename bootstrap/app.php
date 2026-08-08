@@ -21,6 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+
+        $middleware->priority([
+            \Illuminate\Auth\Middleware\Authenticate::class,
+            \App\Http\Middleware\EnsureIsTenantUser::class,
+            \App\Http\Middleware\ResolveTenant::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

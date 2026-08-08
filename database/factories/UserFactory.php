@@ -25,8 +25,11 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
+            'tenant_id' => \App\Models\Tenant::factory(),
             'name' => fake()->name(),
+            'dpi' => fake()->numerify('#############'),
             'email' => fake()->unique()->safeEmail(),
+            'phone' => fake()->numerify('########'),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

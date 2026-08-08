@@ -2,6 +2,13 @@
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use App\Models\Branch;
+use App\Models\CashRegister;
+use App\Models\CashSession;
+use App\Models\PaymentMethod;
+use App\Models\Tenant;
+use App\Models\User;
+use Spatie\Permission\PermissionRegistrar;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,7 +51,25 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function setupSaleContext(array $tenantOverrides = []): array
 {
-    // ..
+    $tenant = Tenant::factory()->create(array_merge(['status' => 'activo'], $tenantOverrides));
+    $branch = Branch::factory()->create(['tenant_id' => $tenant->id]);
+    $user = User::factory()->create(['tenant_id' => $tenant->id]);
+
+    app(PermissionRegistrar::class)->setPermissionsTeamId($tenant->id);
+    $user->givePermissionTo(['sales.create', 'sales.view']);
+
+    $cashRegister = CashRegister::factory()->create(['branch_id' => $branch->id]);
+    $cashSession = CashSession::factory()->create([
+        'cash_register_id' => $cashRegister->id,
+        'user_id' => $user->id,
+        'status' => 'abierto',
+        'opening_amount' => 0,
+        'opened_at' => now(),
+    ]);
+
+    $paymentMethod = PaymentMethod::factory()->create(['tenant_id' => $tenant->id, 'name' => 'Efectivo']);
+
+    return compact('tenant', 'branch', 'user', 'cashSession', 'paymentMethod');
 }
