@@ -5,10 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CashSession extends Model
 {
-     protected $fillable = [
+    use HasFactory;
+
+    protected $fillable = [
         'cash_register_id',
         'user_id',
         'opening_amount',
